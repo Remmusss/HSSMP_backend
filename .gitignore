@@ -1,0 +1,8 @@
+env
+.venv
+.vscode
+*.py[cod]
+__pycache__/
+*.pyo
+*.pyd
+config.json
