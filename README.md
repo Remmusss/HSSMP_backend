@@ -43,8 +43,7 @@ pip install -r requirements.txt
 
 ### 5. Create a `.env` file
 
-Create a `.env` file in the root directory with the following content:
-
+Tạo file `.env` ở src/core:
 ```
 # App settings
 APP_NAME=ZENHRM SYSTEM MARAGEMENT
