@@ -1,8 +1,15 @@
-env
-.venv
-.vscode
-*.py[cod]
+# Virtual environments
+env/
+.env
+.venv/
+venv/
+
+# Editor settings
+.vscode/
+
+# Python cached files
 __pycache__/
+*.py[cod]
 *.pyo
 *.pyd
 *.pyc
