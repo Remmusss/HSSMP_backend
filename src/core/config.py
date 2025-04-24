@@ -4,12 +4,14 @@ from pydantic_settings import BaseSettings
 class CommonSettings(BaseSettings):
     class Config:
         env_file = ".env"
-
+        case_sensitive = True
+        extra = "ignore"
+        
 
 class AppSettings(CommonSettings):
     APP_NAME: str
     APP_VERSION: str
-
+    
 
 class MySQLConfigs(CommonSettings):
     MYSQL_USER: str
@@ -25,7 +27,6 @@ class MySQLConfigs(CommonSettings):
             f"@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}"
         )
 
-
 class SQLServerConfigs(CommonSettings):
     SQLSERVER_USER: str
     SQLSERVER_PASSWORD: str
@@ -39,7 +40,7 @@ class SQLServerConfigs(CommonSettings):
             f"mssql+pymssql://{self.SQLSERVER_USER}:{self.SQLSERVER_PASSWORD}"
             f"@{self.SQLSERVER_HOST}:{self.SQLSERVER_PORT}/{self.SQLSERVER_DATABASE}"
         )
-
+        
 
 # Khởi tạo config
 app_conf = AppSettings()
