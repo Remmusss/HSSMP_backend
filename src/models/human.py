@@ -53,12 +53,6 @@ class EmployeeCreate(BaseModel):
 
 
 class EmployeeUpdate(BaseModel):
-    FullName: Optional[str] = None
-    DateOfBirth: Optional[str] = None
-    Gender: Optional[str] = None
-    PhoneNumber: Optional[str] = None
-    Email: Optional[EmailStr] = None
-    HireDate: Optional[str] = None
     DepartmentID: Optional[int] = None
     PositionID: Optional[int] = None
     Status: Optional[str] = None

@@ -1,13 +1,15 @@
 from fastapi import Depends, Query
 from fastapi.routing import APIRouter
-from src.databases.human_db import get_sync_db as get_sync_hr_db
+from src.databases.human_db import get_sync_db as get_sync_hm_db
 from src.databases.payroll_db import get_sync_db as get_sync_pr_db
 from sqlalchemy.orm import Session
 from src.schemas.user import User
 from src.utils.employees import (
     get_employees,
     add_and_sync_employee,
-    search_employees_logic
+    search_employees_logic,
+    view_employee_details_logic,
+    update_and_sync_employee
 )
 from src.models.human import EmployeeCreate, EmployeeUpdate
 from src._utils import response
@@ -23,7 +25,7 @@ employees_router = APIRouter(prefix="", tags=["Employees"])
 def read_employees(
     page: int = Query(1, ge=1),
     per_page: int = Query(10, ge=1, le=100),
-    db: Session = Depends(get_sync_hr_db)
+    db: Session = Depends(get_sync_hm_db)
 ):
 
     return response(
@@ -33,7 +35,7 @@ def read_employees(
 
 @employees_router.get("/search")
 def search_employees(
-    db: Session = Depends(get_sync_hr_db),
+    db: Session = Depends(get_sync_hm_db),
     search_query: str = Query(None)
 ):
     return response(
@@ -47,14 +49,39 @@ def search_employees(
 @employees_router.post("/add")
 def add_employee(
     employee: EmployeeCreate,
-    hr_db: Session = Depends(get_sync_hr_db),
+    hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db)
 ):
     return response(
         data=add_and_sync_employee(
-            session_human=hr_db,
+            session_human=hm_db,
             session_payroll=pr_db,
             employee=employee
         )
     )
 
+@employees_router.put("/update/{employee_id}")
+def update_employee(
+    employee_id: int,
+    update_data: EmployeeUpdate,
+    hm_db: Session = Depends(get_sync_hm_db),
+    pr_db: Session = Depends(get_sync_pr_db)
+):
+    return response(
+        data=update_and_sync_employee(
+            session_human=hm_db,
+            session_payroll=pr_db,
+            employee_id=employee_id,
+            update_data=update_data
+        )
+    )
+
+
+@employees_router.get("/details/{employee_id}")
+def view_employee_details(
+    employee_id: int,
+    db: Session = Depends(get_sync_hm_db)
+):
+    return response(
+        data=view_employee_details_logic(session=db, employee_id=employee_id)
+    )

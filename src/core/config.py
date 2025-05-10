@@ -52,3 +52,4 @@ class SQLServerUserConfigs(CommonSettings):
 app_conf = AppSettings()
 mysql_conf = MySQLConfigs()
 sqlserver_conf = SQLServerConfigs()
+sqlserver_user_conf = SQLServerUserConfigs()

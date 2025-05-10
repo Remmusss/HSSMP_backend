@@ -22,9 +22,8 @@ from ..schemas.payroll import (
 
 from ..models.human import (
     EmployeeCreate,
-
+    EmployeeUpdate
 )
-from .._utils import response
 
 
 
@@ -146,3 +145,46 @@ def add_and_sync_employee(session_human: Session, session_payroll: Session, empl
         session_human.rollback()
         session_payroll.rollback()
         raise HTTPException(status_code=500, detail=f"Lỗi khi thêm nhân viên: {str(e)}")    
+    
+
+def update_and_sync_employee(session_human : Session, session_payroll : Session, employee_id : int, update_data : EmployeeUpdate):
+    human_emp = session_human.query(HmEmployee).filter_by(EmployeeID=employee_id).first()
+    payroll_emp = session_payroll.query(PrEmployee).filter_by(EmployeeID=employee_id).first()
+
+    if not human_emp or not payroll_emp:
+        missing = []
+        if not human_emp:
+            missing.append("HUMAN_2025")
+        if not payroll_emp:
+            missing.append("payroll")
+        raise HTTPException(status_code=404, detail=f"Nhân viên không tồn tại trong: {', '.join(missing)}")
+
+    try:
+        for field, value in update_data.model_dump(exclude_unset=True).items():
+            setattr(human_emp, field, value)
+        session_human.commit()
+    except Exception as e:
+        session_human.rollback()
+        raise HTTPException(status_code=500, detail=f"Lỗi cập nhật trong HUMAN_2025: {str(e)}")
+
+    try:
+        #  chỉ cập nhật 3 trường là DepartmentID, PositionID, Status
+        for field in ['DepartmentID', 'PositionID', 'Status']:
+            if field in update_data.model_dump(exclude_unset=True):
+                setattr(payroll_emp, field, getattr(human_emp, field))
+        session_payroll.commit()
+    except Exception as e:
+        session_payroll.rollback()
+        session_human.rollback()  
+        raise HTTPException(status_code=500, detail=f"Lỗi cập nhật trong payroll: {str(e)}")
+
+    return {"message": "Cập nhật và đồng bộ nhân viên thành công."}
+
+    
+def view_employee_details_logic(session: Session, employee_id: int):
+    employee = session.query(HmEmployee).filter_by(EmployeeID=employee_id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Nhân viên không tồn tại")
+    
+    return employee
+
