@@ -180,7 +180,49 @@ def update_and_sync_employee(session_human : Session, session_payroll : Session,
 
     return {"message": "Cập nhật và đồng bộ nhân viên thành công."}
 
+
+def delete_employee_logic(session_human : Session, session_payroll: Session, employee_id: int):
+    human_emp = session_human.query(HmEmployee).filter_by(EmployeeID=employee_id).first()
+    payroll_emp = session_payroll.query(PrEmployee).filter_by(EmployeeID=employee_id).first()
+
+    if not human_emp and not payroll_emp:
+        raise HTTPException(status_code=404, detail="Nhân viên không tồn tại trong cả hai hệ thống.")
+
+    if human_emp:
+        dividend_exists = session_human.query(HmDividend).filter_by(EmployeeID=employee_id).first()
+        if dividend_exists:
+            raise HTTPException(
+                status_code=400,
+                detail="Không thể xóa. Nhân viên có dữ liệu cổ tức trong HUMAN_2025."
+            )
+
+    if payroll_emp:
+        salary_exists = session_payroll.query(PrSalary).filter_by(EmployeeID=employee_id).first()
+        attendance_exists = session_payroll.query(PrAttendance).filter_by(EmployeeID=employee_id).first()
+
+        if salary_exists or attendance_exists:
+            raise HTTPException(
+                status_code=400,
+                detail="Không thể xóa. Nhân viên có dữ liệu lương hoặc chấm công trong payroll."
+            )
+
+    try:
+        if human_emp:
+            session_human.delete(human_emp)
+            session_human.commit()
+
+        if payroll_emp:
+            session_payroll.delete(payroll_emp)
+            session_payroll.commit()
+
+        return {"message": "Nhân viên đã được xóa thành công khỏi cả hai hệ thống."}
+
+    except Exception as e:
+        session_human.rollback()
+        session_payroll.rollback()
+        raise HTTPException(status_code=500, detail=f"Lỗi khi xóa nhân viên: {str(e)}")
     
+
 def view_employee_details_logic(session: Session, employee_id: int):
     employee = session.query(HmEmployee).filter_by(EmployeeID=employee_id).first()
     if not employee:

@@ -9,7 +9,8 @@ from src.utils.employees import (
     add_and_sync_employee,
     search_employees_logic,
     view_employee_details_logic,
-    update_and_sync_employee
+    update_and_sync_employee,
+    delete_employee_logic
 )
 from src.models.human import EmployeeCreate, EmployeeUpdate
 from src._utils import response
@@ -76,6 +77,19 @@ def update_employee(
         )
     )
 
+@employees_router.delete("/delete/{employee_id}")
+def delete_employee(
+    employee_id: int,
+    hm_db: Session = Depends(get_sync_hm_db),
+    pr_db: Session = Depends(get_sync_pr_db)
+):
+    return response(
+        data=delete_employee_logic(
+            session_human=hm_db, 
+            session_payroll=pr_db, 
+            employee_id=employee_id
+        )
+    )
 
 @employees_router.get("/details/{employee_id}")
 def view_employee_details(
