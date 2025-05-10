@@ -28,17 +28,23 @@ class MySQLConfigs(CommonSettings):
         )
 
 class SQLServerConfigs(CommonSettings):
-    SQLSERVER_USER: str
-    SQLSERVER_PASSWORD: str
     SQLSERVER_HOST: str
-    SQLSERVER_PORT: int
     SQLSERVER_DATABASE: str
 
     @property
     def SQLSERVER_CONNECTION(self) -> str:
         return (
-            f"mssql+pymssql://{self.SQLSERVER_USER}:{self.SQLSERVER_PASSWORD}"
-            f"@{self.SQLSERVER_HOST}:{self.SQLSERVER_PORT}/{self.SQLSERVER_DATABASE}"
+            f"mssql+pyodbc://{self.SQLSERVER_HOST}/{self.SQLSERVER_DATABASE}?driver=ODBC+Driver+17+for+SQL+Server"
+        )
+
+class SQLServerUserConfigs(CommonSettings):
+    SQLSERVER_HOST: str
+    SQLSERVER_USER_DB: str
+
+    @property
+    def SQLSERVER_USER_CONNECTION(self) -> str:
+        return (
+            f"mssql+pyodbc://{self.SQLSERVER_HOST}/{self.SQLSERVER_USER_DB}?driver=ODBC+Driver+17+for+SQL+Server"
         )
         
 
@@ -46,3 +52,4 @@ class SQLServerConfigs(CommonSettings):
 app_conf = AppSettings()
 mysql_conf = MySQLConfigs()
 sqlserver_conf = SQLServerConfigs()
+sqlserver_user_conf = SQLServerUserConfigs()
