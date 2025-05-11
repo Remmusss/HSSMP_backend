@@ -8,7 +8,7 @@ class DepartmentOut(BaseModel):
     DepartmentName: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class PositionOut(BaseModel):
@@ -16,7 +16,7 @@ class PositionOut(BaseModel):
     PositionName: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class EmployeeOut(BaseModel):
@@ -34,7 +34,7 @@ class EmployeeOut(BaseModel):
     Position: Optional[PositionOut]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 
