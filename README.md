@@ -1,99 +1,118 @@
 # HSSMP Backend
 
-Backend service for HSMP (ZENHRM SYSTEM MARAGEMENT PROJECT) integration project.
+Backend service for ZENHRM SYSTEM MANAGEMENT PROJECT (HSSMP) - Dự án tích hợp hệ thống quản lý nhân sự.
 
-## Requirements
+## Chức năng
+
+- Tích hợp dữ liệu giữa hai cơ sở dữ liệu: HUMAN_2025 (SQL Server) và payroll (MySQL)
+- Quản lý nhân viên: thêm, sửa, xóa, tìm kiếm và đồng bộ dữ liệu giữa hai hệ thống
+- API cho các thao tác quản lý nhân sự
+
+## Yêu cầu
 
 - Python 3.12+
 - MySQL
 - SQL Server (Microsoft)
 
-## Installation
+## Cài đặt
 
-### 1. Clone the repository
+### 1. Clone repository
 
 ```bash
 git clone https://github.com/Remmusss/HSSMP_backend.git
 cd HSSMP_backend
 ```
 
-### 2. Create a virtual environment
+### 2. Tạo môi trường ảo
 
 ```bash
 python -m venv env
 ```
 
-### 3. Activate the virtual environment
+### 3. Kích hoạt môi trường ảo
 
-On Windows:
+Trên Windows:
 ```bash
 env\Scripts\activate
 ```
 
-On macOS/Linux:
+Trên macOS/Linux:
 ```bash
 source env/bin/activate
 ```
 
-### 4. Install dependencies
+### 4. Cài đặt các thư viện
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 5. Create a `.env` file
+### 5. Tạo file `.env`
 
-Tạo file `.env` ở thư mục gốc:
+Tạo file `.env` trong thư mục gốc với nội dung sau:
+
 ```
-# App settings
-APP_NAME=ZENHRM SYSTEM MARAGEMENT
-APP_VERSION=0.1.0
-
-# MySQL configuration
+# MySQL configuration (payroll)
 MYSQL_USER=your_mysql_username
 MYSQL_PASSWORD=your_mysql_password
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
 MYSQL_DATABASE=payroll
 
-# SQL Server configuration
-SQLSERVER_USER=your_sqlserver_username
-SQLSERVER_PASSWORD=your_sqlserver_password
+# SQL Server configuration (HUMAN_2025)
 SQLSERVER_HOST=localhost
-SQLSERVER_PORT=1433
 SQLSERVER_DATABASE=HUMAN_2025
+SQLSERVER_USER_DB=Human_2025_Users
 ```
 
-Modify the database credentials as needed for your environment.
+Cập nhật thông tin đăng nhập database phù hợp với môi trường của bạn.
 
-### 6. Run the application
+### 6. Chạy ứng dụng
 
 ```bash
 uvicorn main:app --reload
 ```
 
-The API will be available at http://localhost:8000
+API sẽ khả dụng tại http://localhost:8000
 
-## API Documentation
+## Tài liệu API
 
-Once the application is running, you can access:
+Sau khi ứng dụng chạy, bạn có thể truy cập:
 
-- API documentation: http://localhost:8000/docs
-- Alternative API documentation: http://localhost:8000/redoc
+- Tài liệu API (Swagger): http://localhost:8000/docs
+- Tài liệu API thay thế (ReDoc): http://localhost:8000/redoc
 
-## Project Structure
+## Cấu trúc dự án
 
 ```
 HSSMP_backend/
-├── main.py                # Application entry point
-├── requirements.txt       # Project dependencies
-├── src/                   # Source code
-│   ├── core/              # Core modules (config, etc.)
-│   ├── models/            # Data models
-│   └── utils/             # Utility functions
+├── main.py                # Entry point của ứng dụng
+├── requirements.txt       # Các thư viện phụ thuộc
+├── src/                   # Mã nguồn
+│   ├── core/              # Module cốt lõi (cấu hình, v.v.)
+│   ├── databases/         # Kết nối cơ sở dữ liệu
+│   ├── models/            # Data models và schemas cho API
+│   ├── routers/           # Định tuyến API
+│   ├── schemas/           # Schema định nghĩa cấu trúc các bảng
+│   ├── utils/             # Các hàm tiện ích xử lý logic
+│   └── _utils.py          # Các hàm tiện ích chung
 ```
 
-## Database Connection
+## Kết nối cơ sở dữ liệu
 
-This project uses SQLAlchemy to connect to both MySQL and SQL Server databases.
-The connection strings are configured in `src/core/config.py` and are loaded from environment variables. 
+Dự án sử dụng SQLAlchemy để kết nối đồng thời với hai cơ sở dữ liệu:
+- MySQL (payroll): quản lý lương và chấm công
+- SQL Server (HUMAN_2025): quản lý thông tin nhân sự
+
+Chuỗi kết nối được cấu hình trong các file trong thư mục `src/databases/` và được nạp từ biến môi trường.
+
+## API Endpoints
+
+### Quản lý nhân viên (`/employees`)
+
+- `GET /employees`: Lấy danh sách nhân viên (phân trang)
+- `GET /employees/search`: Tìm kiếm nhân viên theo nhiều tiêu chí
+- `GET /employees/details/{employee_id}`: Xem chi tiết nhân viên
+- `POST /employees/add`: Thêm nhân viên mới (đồng bộ hai hệ thống)
+- `PUT /employees/update/{employee_id}`: Cập nhật thông tin nhân viên
+- `DELETE /employees/delete/{employee_id}`: Xóa nhân viên

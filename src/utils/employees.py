@@ -34,13 +34,17 @@ def get_employees(session: Session, page: int = 1, per_page: int = 10) -> List[H
 
     offset = (page - 1) * per_page
 
-    return query.order_by(HmEmployee.EmployeeID).offset(offset).limit(per_page).all()
+    results = query.order_by(HmEmployee.EmployeeID).offset(offset).limit(per_page).all()
+
+    return results
 
 
 
 def search_employees_logic(
     session: Session,
-    search_query: str = None
+    search_query: str = None,
+    page: int = 1,
+    per_page: int = 10
 ):
     query = session.query(HmEmployee).join(
         HmDepartment, HmEmployee.DepartmentID == HmDepartment.DepartmentID, isouter=True
@@ -66,23 +70,10 @@ def search_employees_logic(
                 (HmPosition.PositionName.ilike(f"%{search_query}%"))
             )
 
-    results = query.all()
+    offset = (page - 1) * per_page
+    results = query.order_by(HmEmployee.EmployeeID).offset(offset).limit(per_page).all()
 
-    return [
-        {
-            "EmployeeID": emp.EmployeeID,
-            "FullName": emp.FullName,
-            "DepartmentID": emp.DepartmentID,
-            "DepartmentName": emp.department.DepartmentName if emp.department else None,
-            "PositionID": emp.PositionID,
-            "PositionName": emp.position.PositionName if emp.position else None,
-            "Status": emp.Status,
-            "Email": emp.Email,
-            "PhoneNumber": emp.PhoneNumber,
-            "HireDate": str(emp.HireDate),
-        }
-        for emp in results
-    ]
+    return results
 
 
 

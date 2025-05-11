@@ -36,13 +36,17 @@ def read_employees(
 
 @employees_router.get("/search")
 def search_employees(
-    db: Session = Depends(get_sync_hm_db),
-    search_query: str = Query(None)
+    page: int = Query(1, ge=1),
+    per_page: int = Query(10, ge=1, le=100),
+    search_query: str = Query(None),
+    db: Session = Depends(get_sync_hm_db)
 ):
     return response(
         data=search_employees_logic(
             session=db,
-            search_query=search_query
+            search_query=search_query,
+            page=page,
+            per_page=per_page
         )
     )
 
