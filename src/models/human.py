@@ -56,3 +56,15 @@ class EmployeeUpdate(BaseModel):
     DepartmentID: Optional[int] = None
     PositionID: Optional[int] = None
     Status: Optional[str] = None
+
+
+class DepartmentCreate(BaseModel):
+    DepartmentID: Optional[int] = None
+    DepartmentName: str
+    CreatedAt: datetime
+    UpdatedAt: datetime
+
+
+class DepartmentUpdate(BaseModel):
+    DepartmentName: Optional[str] = None
+    UpdatedAt: Optional[datetime] = None
