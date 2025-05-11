@@ -62,6 +62,8 @@ MYSQL_DATABASE=payroll
 # SQL Server configuration (HUMAN_2025)
 SQLSERVER_HOST=localhost
 SQLSERVER_DATABASE=HUMAN_2025
+
+# DB cho accounts
 SQLSERVER_USER_DB=Human_2025_Users
 ```
 
