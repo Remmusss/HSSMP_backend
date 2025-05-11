@@ -118,3 +118,10 @@ Chuỗi kết nối được cấu hình trong các file trong thư mục `src/d
 - `POST /employees/add`: Thêm nhân viên mới (đồng bộ hai hệ thống)
 - `PUT /employees/update/{employee_id}`: Cập nhật thông tin nhân viên
 - `DELETE /employees/delete/{employee_id}`: Xóa nhân viên
+
+### Quản lý bảng lương (`/payroll`)
+
+- `GET /payroll`: Lấy danh sách bảng lương (phân trang)
+- `GET /payroll/search`: Tìm kiếm bảng lương theo ID hoặc tên nhân viên
+- `PUT /payroll/update/{payroll_id}`: Cập nhật thông tin bảng lương
+- `GET /payroll/attendance`: Lấy danh sách chấm công (phân trang)
