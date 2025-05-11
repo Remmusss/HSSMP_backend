@@ -49,7 +49,7 @@ class SQLServerUserConfigs(CommonSettings):
         
 
 # Khởi tạo config
-app_conf = AppSettings()
+# app_conf = AppSettings()
 mysql_conf = MySQLConfigs()
 sqlserver_conf = SQLServerConfigs()
 sqlserver_user_conf = SQLServerUserConfigs()
