@@ -17,9 +17,9 @@ def get_positions(
         )
     )
 
-@positions_router.get("/{position_id}")
-def get_position_by_department(
-    position_id: int = Path(..., description="ID của chức vụ"),
+@positions_router.get("/distribution/{position_id}")
+def get_numbers_of_position_by_department(
+    position_id: int,
     db: Session = Depends(get_sync_hm_db)
 ):
     return response(
