@@ -13,11 +13,10 @@ def create_tables():
     with engine.begin() as conn:
         Base.metadata.create_all(conn)
 
-
 class User(Base):
     __tablename__ = 'Users'
-
-    employee_id: Mapped[int] = mapped_column(Integer)
-    username: Mapped[str] = mapped_column(String(50), primary_key=True)
-    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    role: Mapped[str] = mapped_column(String(50))
+    
+    Employee_id: Mapped[int] = mapped_column(Integer)
+    Username: Mapped[str] = mapped_column(String(50), primary_key=True)
+    Password: Mapped[str] = mapped_column(String(255), nullable=False)
+    Role: Mapped[str] = mapped_column(String(50))

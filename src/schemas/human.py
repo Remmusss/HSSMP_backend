@@ -11,7 +11,7 @@ class Department(Base):
     __tablename__ = "Departments"
 
     DepartmentID = Column(Integer, primary_key=True, autoincrement=True)
-    DepartmentName = Column(String(100), nullable=False)
+    DepartmentName = Column(NVARCHAR(100), nullable=False)
     CreatedAt = Column(DateTime, server_default=text("GETDATE()"))
     UpdatedAt = Column(DateTime, server_default=text("GETDATE()"))
 
@@ -22,7 +22,7 @@ class Position(Base):
     __tablename__ = "Positions"
 
     PositionID = Column(Integer, primary_key=True, autoincrement=True)
-    PositionName = Column(String(100), nullable=False)
+    PositionName = Column(NVARCHAR(100), nullable=False)
     CreatedAt = Column(DateTime, server_default=text("GETDATE()"))
     UpdatedAt = Column(DateTime, server_default=text("GETDATE()"))
 

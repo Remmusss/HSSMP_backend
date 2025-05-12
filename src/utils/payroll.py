@@ -13,8 +13,12 @@ from ..schemas.payroll import (
     Salary as PrSalary,
     Attendance as PrAttendance,
 )
-from ..models.payroll import SalaryReportByDepartment, AttendanceWarning, SalaryDifferenceWarning, PayrollUpdate
-
+from ..models.payroll import ( 
+    SalaryReportByDepartment, 
+    AttendanceWarning, 
+    SalaryDifferenceWarning, 
+    PayrollUpdate
+)
 
 from datetime import date, timedelta
 from typing import Optional, List
@@ -28,11 +32,6 @@ def get_payroll(
         ):
     query = session.query(PrSalary).join(
         PrEmployee, PrSalary.EmployeeID == PrEmployee.EmployeeID
-    ).options(
-        joinedload(PrSalary.employee)
-        .joinedload(PrEmployee.department),
-        joinedload(PrSalary.employee)
-        .joinedload(PrEmployee.position)
     )
 
     offset = (page - 1) * per_page
@@ -62,12 +61,7 @@ def search_payroll_logic(
         ):
     query = session.query(PrSalary).join(
         PrEmployee, PrSalary.EmployeeID == PrEmployee.EmployeeID
-    ).options(
-        joinedload(PrSalary.employee)
-        .joinedload(PrEmployee.department),
-        joinedload(PrSalary.employee)
-        .joinedload(PrEmployee.position)
-    )  
+    )
 
     if search_query:
         try:
@@ -141,4 +135,6 @@ def get_attendance_records(
         query = query.filter(PrAttendance.EmployeeID == employee_id)
 
     offset = (page - 1) * per_page
-    return query.order_by(PrAttendance.AttendanceMonth.desc()).offset(offset).limit(per_page).all()
+    results = query.order_by(PrAttendance.AttendanceMonth.desc()).offset(offset).limit(per_page).all()
+
+    return results

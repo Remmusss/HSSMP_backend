@@ -125,3 +125,18 @@ Chuỗi kết nối được cấu hình trong các file trong thư mục `src/d
 - `GET /payroll/search`: Tìm kiếm bảng lương theo ID hoặc tên nhân viên
 - `PUT /payroll/update/{payroll_id}`: Cập nhật thông tin bảng lương
 - `GET /payroll/attendance`: Lấy danh sách chấm công (phân trang)
+
+### Quản lý phòng ban (`/departments`)
+
+- `GET /departments`: Lấy danh sách tất cả phòng ban kèm số lượng nhân viên
+
+### Quản lý chức vụ (`/positions`)
+
+- `GET /positions`: Lấy danh sách tất cả chức vụ kèm tổng số nhân viên
+- `GET /positions/{position_id}`: Xem phân bố nhân viên theo phòng ban cho một chức vụ cụ thể
+
+### Báo cáo thống kê (`/reports`)
+
+- `GET /reports/hr`: Báo cáo nhân sự - Tổng số nhân viên, phân bổ theo phòng ban, chức vụ, trạng thái làm việc
+- `GET /reports/payroll?month={YYYY-MM-DD}`: Báo cáo lương - Tổng ngân sách lương, lương trung bình (tham số month tùy chọn, nếu không cung cấp sẽ lấy tất cả dữ liệu)
+- `GET /reports/dividend?year={YYYY}`: Báo cáo cổ tức - Tổng cổ tức đã trả, danh sách nhân viên có cổ phần (tham số year tùy chọn, nếu không cung cấp sẽ lấy tất cả dữ liệu)
