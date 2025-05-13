@@ -38,7 +38,9 @@ def add_department(
 ):
     return response(
         data=add_and_sync_department(
-            session_human=hm_db, session_payroll=pr_db, department=department
+            session_human=hm_db, 
+            session_payroll=pr_db, 
+            department=department
         )
     )
 
@@ -68,6 +70,8 @@ def delete_department(
 ):
     return response(
         data=delete_and_sync_department(
-            session_human=hm_db, session_payroll=pr_db, department_id=department_id
+            session_human=hm_db,
+            session_payroll=pr_db,
+            department_id=department_id
         )
     )

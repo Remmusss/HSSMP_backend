@@ -57,54 +57,43 @@ def read_departments(session: Session):
     ]
 
 def add_and_sync_department(session_human: Session, session_payroll: Session, department: DepartmentCreate):
-    if department.DepartmentID is not None:
-        exists_human = session_human.query(HmDepartment).filter_by(DepartmentID=department.DepartmentID).first()
-        exists_payroll = session_payroll.query(PrDepartment).filter_by(DepartmentID=department.DepartmentID).first()
+    max_id_human = session_human.query(HmDepartment.DepartmentID).order_by(HmDepartment.DepartmentID.desc()).first()
+    max_id_payroll = session_payroll.query(PrDepartment.DepartmentID).order_by(PrDepartment.DepartmentID.desc()).first()
 
-        if exists_human or exists_payroll:
-            source = []
-            if exists_human:
-                source.append("HUMAN_2025")
-            if exists_payroll:
-                source.append("payroll")
-            raise HTTPException(status_code=400, detail=f"DepartmentID đã tồn tại trong: {', '.join(source)}")
-    else:
-        max_id_human = session_human.query(HmDepartment.DepartmentID).order_by(HmDepartment.DepartmentID.desc()).first()
-        max_id_payroll = session_payroll.query(PrDepartment.DepartmentID).order_by(PrDepartment.DepartmentID.desc()).first()
+    max_id = max(
+        max_id_human[0] if max_id_human else 0,
+        max_id_payroll[0] if max_id_payroll else 0
+    )
+    
+    department_id = max_id + 1
 
-        max_id = max(
-            max_id_human[0] if max_id_human else 0,
-            max_id_payroll[0] if max_id_payroll else 0
+    if session_human.query(HmDepartment).filter_by(DepartmentID=department_id).first():
+        raise HTTPException(status_code=400, detail="DepartmentID đã tồn tại trong HUMAN_2025")
+    if session_payroll.query(PrDepartment).filter_by(DepartmentID=department_id).first():
+        raise HTTPException(status_code=400, detail="DepartmentID đã tồn tại trong payroll")
+    
+    try:
+        new_human_dept = HmDepartment(
+            DepartmentID=department_id,
+            DepartmentName=department.DepartmentName,
+            CreatedAt=department.CreatedAt,
+            UpdatedAt=department.UpdatedAt
         )
-        department.DepartmentID = max_id + 1
+        session_human.add(new_human_dept)
+        session_human.commit()
 
-        if session_human.query(HmDepartment).filter_by(DepartmentID=department.DepartmentID).first():
-            raise HTTPException(status_code=400, detail="DepartmentID đã tồn tại trong HUMAN_2025")
-        if session_payroll.query(PrDepartment).filter_by(DepartmentID=department.DepartmentID).first():
-            raise HTTPException(status_code=400, detail="DepartmentID đã tồn tại trong payroll")
-        
-        try:
-            new_human_dept = HmDepartment(
-                DepartmentID=department.DepartmentID,
-                DepartmentName=department.DepartmentName,
-                CreatedAt=department.CreatedAt,
-                UpdatedAt=department.UpdatedAt
-            )
-            session_human.add(new_human_dept)
-            session_human.commit()
+        new_payroll_dept = PrDepartment(
+            DepartmentID=department_id,
+            DepartmentName=department.DepartmentName,
+        )
+        session_payroll.add(new_payroll_dept)
+        session_payroll.commit()
 
-            new_payroll_dept = PrDepartment(
-                DepartmentID=department.DepartmentID,
-                DepartmentName=department.DepartmentName,
-            )
-            session_payroll.add(new_payroll_dept)
-            session_payroll.commit()
-
-            return {"message": "Phòng ban đã được thêm và đồng bộ thành công.", "DepartmentID": department.DepartmentID}
-        except Exception as e:
-            session_human.rollback()
-            session_payroll.rollback()
-            raise HTTPException(status_code=500, detail=f"Lỗi khi thêm phòng ban: {str(e)}")    
+        return {"message": "Phòng ban đã được thêm và đồng bộ thành công.", "DepartmentID": department_id}
+    except Exception as e:
+        session_human.rollback()
+        session_payroll.rollback()
+        raise HTTPException(status_code=500, detail=f"Lỗi khi thêm phòng ban: {str(e)}")    
 
 
 
@@ -157,29 +146,48 @@ def delete_and_sync_department(session_human: Session, session_payroll: Session,
         human_employees = session_human.query(HmEmployee).filter_by(DepartmentID=department_id).all()
         payroll_employees = session_payroll.query(PrEmployee).filter_by(DepartmentID=department_id).all()
 
+        if human_employees or payroll_employees:
+            employee_info = {}
+
+            for emp in human_employees:
+                employee_info[emp.EmployeeID] = {
+                    "EmployeeID": emp.EmployeeID,
+                    "FullName": emp.FullName,
+                    "Source": "HUMAN_2025"
+                }
+
+            for emp in payroll_employees:
+                if emp.EmployeeID in employee_info:
+                    employee_info[emp.EmployeeID]["Source"] += ", payroll"
+                else:
+                    employee_info[emp.EmployeeID] = {
+                        "EmployeeID": emp.EmployeeID,
+                        "FullName": emp.FullName,
+                        "Source": "payroll"
+                    }
+
+            employee_list = sorted(employee_info.values(), key=lambda x: x["EmployeeID"])
+
+
+            error_message = f"Không thể xóa phòng ban. Có {len(employee_list)} nhân viên thuộc phòng ban này."
+            raise HTTPException(status_code=400, detail={
+                "message": error_message,
+                "employees": employee_list
+            })
+
         if human_dept:
             session_human.delete(human_dept)
         
         if payroll_dept:
             session_payroll.delete(payroll_dept)
         
-
-        for emp in human_employees:
-            emp.DepartmentID = None
-        
-        for emp in payroll_employees:
-            emp.DepartmentID = None
-
         session_human.commit()
         session_payroll.commit()
 
-        affected_employees = max(len(human_employees), len(payroll_employees))
-        message = "Phòng ban đã được xóa thành công khỏi cả hai hệ thống."
-        if affected_employees > 0:
-            message += f" Đã cập nhật {affected_employees} nhân viên sang không có phòng ban."
+        return {"message": "Phòng ban đã được xóa thành công khỏi cả hai hệ thống."}
 
-        return {"message": message, "affected_employees": affected_employees}
-
+    except HTTPException:
+        raise
     except Exception as e:
         session_human.rollback()
         session_payroll.rollback()
