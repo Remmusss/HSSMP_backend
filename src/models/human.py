@@ -59,7 +59,6 @@ class EmployeeUpdate(BaseModel):
 
 
 class DepartmentCreate(BaseModel):
-    DepartmentID: Optional[int] = None
     DepartmentName: str
     CreatedAt: datetime
     UpdatedAt: datetime
@@ -68,3 +67,14 @@ class DepartmentCreate(BaseModel):
 class DepartmentUpdate(BaseModel):
     DepartmentName: Optional[str] = None
     UpdatedAt: Optional[datetime] = None
+
+
+class PositionCreate(BaseModel):
+    PositionName: str
+    CreatedAt: datetime
+    UpdatedAt: datetime
+
+class PositionUpdate(BaseModel):
+    PositionName: Optional[str] = None
+    UpdatedAt: Optional[datetime] = None
+
