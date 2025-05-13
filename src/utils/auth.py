@@ -8,7 +8,7 @@ from jose import jwt, JWTError
 from pydantic import BaseModel
 from datetime import datetime, timedelta, UTC
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 SECRET_KEY = "gi-cung-duoc"
 ALGORITHM = "HS256"
 
@@ -41,7 +41,7 @@ def get_current_user(
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail="Không thể xác thực tài khoản",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
@@ -81,7 +81,8 @@ def has_role(required_roles: list[str]):
     def check_role(user: User = Depends(get_current_user)):
         if user.Role not in required_roles:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden"
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Không có quyền truy cập"
             )
         return user
 

@@ -14,6 +14,8 @@ from src.utils.employees import (
 )
 from src.models.human import EmployeeCreate, EmployeeUpdate
 from src._utils import response
+from src.utils.auth import has_role
+from src.models.user import Role
 
 from typing import Optional
 
@@ -25,6 +27,9 @@ def read_employees(
     page: int = Query(1, ge=1),
     per_page: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_sync_hm_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
+    ),
 ):
     return response(data=get_employees(session=db, page=page, per_page=per_page))
 
@@ -35,6 +40,9 @@ def search_employees(
     per_page: int = Query(10, ge=1, le=100),
     search_query: str = Query(None),
     db: Session = Depends(get_sync_hm_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
+    ),
 ):
     return response(
         data=search_employees_logic(
@@ -48,6 +56,9 @@ def add_employee(
     employee: EmployeeCreate,
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
+    ),
 ):
     return response(
         data=add_and_sync_employee(
@@ -62,6 +73,9 @@ def update_employee(
     update_data: EmployeeUpdate,
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
+    ),
 ):
     return response(
         data=update_and_sync_employee(
@@ -78,6 +92,9 @@ def delete_employee(
     employee_id: int,
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
+    ),
 ):
     return response(
         data=delete_employee_logic(
@@ -87,7 +104,13 @@ def delete_employee(
 
 
 @employees_router.get("/details/{employee_id}")
-def view_employee_details(employee_id: int, db: Session = Depends(get_sync_hm_db)):
+def view_employee_details(
+    employee_id: int,
+    db: Session = Depends(get_sync_hm_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
+    )
+):
     return response(
         data=view_employee_details_logic(session=db, employee_id=employee_id)
     )

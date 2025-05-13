@@ -108,35 +108,72 @@ Dự án sử dụng SQLAlchemy để kết nối đồng thời với hai cơ s
 
 Chuỗi kết nối được cấu hình trong các file trong thư mục `src/databases/` và được nạp từ biến môi trường.
 
-## API Endpoints
+## API Endpoints và Phân quyền
+
+Hệ thống có 4 vai trò người dùng:
+- `Admin`: Có toàn quyền trên hệ thống
+- `HR Manager`: Quản lý thông tin nhân viên và báo cáo nhân sự
+- `Payroll Manager`: Quản lý lương và chấm công
+- `Employee`: Người dùng thông thường
+
+### Xác thực người dùng (`/`)
+
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/login` | POST | Đăng nhập và lấy token | Tất cả |
+| `/refresh` | POST | Làm mới token | Đã đăng nhập |
+| `/me` | GET | Xem thông tin người dùng hiện tại | Đã đăng nhập |
 
 ### Quản lý nhân viên (`/employees`)
 
-- `GET /employees`: Lấy danh sách nhân viên (phân trang)
-- `GET /employees/search`: Tìm kiếm nhân viên theo nhiều tiêu chí
-- `GET /employees/details/{employee_id}`: Xem chi tiết nhân viên
-- `POST /employees/add`: Thêm nhân viên mới (đồng bộ hai hệ thống)
-- `PUT /employees/update/{employee_id}`: Cập nhật thông tin nhân viên
-- `DELETE /employees/delete/{employee_id}`: Xóa nhân viên
-
-### Quản lý bảng lương (`/payroll`)
-
-- `GET /payroll`: Lấy danh sách bảng lương (phân trang)
-- `GET /payroll/search`: Tìm kiếm bảng lương theo ID hoặc tên nhân viên
-- `PUT /payroll/update/{payroll_id}`: Cập nhật thông tin bảng lương
-- `GET /payroll/attendance`: Lấy danh sách chấm công (phân trang)
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/employees` | GET | Danh sách nhân viên (phân trang) | Admin, HR Manager |
+| `/employees/search` | GET | Tìm kiếm nhân viên | Admin, HR Manager |
+| `/employees/details/{employee_id}` | GET | Chi tiết nhân viên | Admin, HR Manager |
+| `/employees/add` | POST | Thêm nhân viên mới (đồng bộ) | Admin, HR Manager |
+| `/employees/update/{employee_id}` | PUT | Cập nhật thông tin nhân viên | Admin, HR Manager |
+| `/employees/delete/{employee_id}` | DELETE | Xóa nhân viên | Admin, HR Manager |
 
 ### Quản lý phòng ban (`/departments`)
 
-- `GET /departments`: Lấy danh sách tất cả phòng ban kèm số lượng nhân viên
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/departments` | GET | Danh sách phòng ban | Admin |
+| `/departments/add` | POST | Thêm phòng ban mới (đồng bộ) | Admin |
+| `/departments/update/{department_id}` | PUT | Cập nhật thông tin phòng ban | Admin |
+| `/departments/delete/{department_id}` | DELETE | Xóa phòng ban | Admin |
 
 ### Quản lý chức vụ (`/positions`)
 
-- `GET /positions`: Lấy danh sách tất cả chức vụ kèm tổng số nhân viên
-- `GET /positions/{position_id}`: Xem phân bố nhân viên theo phòng ban cho một chức vụ cụ thể
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/positions` | GET | Danh sách chức vụ | Admin |
+| `/positions/distribution/{position_id}` | GET | Phân bố nhân viên theo phòng ban | Admin |
+| `/positions/add` | POST | Thêm chức vụ mới (đồng bộ) | Admin |
+| `/positions/update/{position_id}` | PUT | Cập nhật thông tin chức vụ | Admin |
+| `/positions/delete/{position_id}` | DELETE | Xóa chức vụ | Admin |
+
+### Quản lý lương (`/payroll`)
+
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/payroll` | GET | Danh sách bảng lương (phân trang) | Admin, Payroll Manager |
+| `/payroll/search` | GET | Tìm kiếm bảng lương | Admin, Payroll Manager |
+| `/payroll/update/{payroll_id}` | PUT | Cập nhật thông tin lương | Admin, Payroll Manager |
+| `/payroll/attendance` | GET | Danh sách chấm công (phân trang) | Admin, Payroll Manager |
 
 ### Báo cáo thống kê (`/reports`)
 
-- `GET /reports/hr`: Báo cáo nhân sự - Tổng số nhân viên, phân bổ theo phòng ban, chức vụ, trạng thái làm việc
-- `GET /reports/payroll?month={YYYY-MM-DD}`: Báo cáo lương - Tổng ngân sách lương, lương trung bình (tham số month tùy chọn, nếu không cung cấp sẽ lấy tất cả dữ liệu)
-- `GET /reports/dividend?year={YYYY}`: Báo cáo cổ tức - Tổng cổ tức đã trả, danh sách nhân viên có cổ phần (tham số year tùy chọn, nếu không cung cấp sẽ lấy tất cả dữ liệu)
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/reports/hr` | GET | Báo cáo nhân sự | Admin, HR Manager |
+| `/reports/payroll` | GET | Báo cáo lương | Admin, Payroll Manager |
+| `/reports/dividend` | GET | Báo cáo cổ tức | Admin |
+
+### Lưu ý về phân quyền
+
+- **Admin**: Có quyền truy cập toàn bộ API
+- **HR Manager**: Quản lý nhân viên và xem báo cáo nhân sự
+- **Payroll Manager**: Quản lý lương, chấm công và xem báo cáo lương
+- **Employee**: Chỉ có quyền xem thông tin cá nhân

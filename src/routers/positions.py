@@ -11,20 +11,30 @@ from src.utils.positions import (
     delete_and_sync_position,
 )
 from src.models.human import PositionUpdate, PositionCreate
-
+from src.utils.auth import has_role
+from src.models.user import Role
 from src._utils import response
 
 positions_router = APIRouter(prefix="", tags=["Positions"])
 
 
 @positions_router.get("")
-def get_positions(db: Session = Depends(get_sync_hm_db)):
+def get_positions(
+    db: Session = Depends(get_sync_hm_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value])
+    )
+):
     return response(data=read_positions(session=db))
 
 
 @positions_router.get("/distribution/{position_id}")
 def get_numbers_of_position_by_department(
-    position_id: int, db: Session = Depends(get_sync_hm_db)
+    position_id: int, 
+    db: Session = Depends(get_sync_hm_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value])
+    )
 ):
     return response(data=get_position_distribution(session=db, position_id=position_id))
 
@@ -34,6 +44,9 @@ def add_position(
     position: PositionCreate,
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value])
+    )
 ):
     return response(
         data=add_and_sync_position(
@@ -50,6 +63,9 @@ def update_position(
     position: PositionUpdate,
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value])
+    )
 ):
     return response(
         data=update_and_sync_position(
@@ -66,6 +82,9 @@ def delete_position(
     position_id: int,
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value])
+    )
 ):
     return response(
         data=delete_and_sync_position(

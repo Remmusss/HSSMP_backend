@@ -23,7 +23,7 @@ def login(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid username or password",
+            detail="Tên đăng nhập hoặc mật khẩu không hợp lệ"
         )
 
     access_token = create_access_token(data={"sub": user.Username})
@@ -38,8 +38,8 @@ def refresh(
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+        detail="Không thể xác thực tài khoản",
+        headers={"WWW-Authenticate": "Bearer"}
     )
     user = get_current_user(db, token)
     if not user:
@@ -57,7 +57,7 @@ def me(db: Session = Depends(get_sync_user_db), token: str = Depends(oauth2_sche
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="Không thể xác thực tài khoản"
         )
     return UserResponse(
         Username=user.Username, Role=user.Role, Employee_id=user.Employee_id

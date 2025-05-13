@@ -12,12 +12,19 @@ from src.utils.reports import (
     get_dividend_report_logic,
 )
 from src._utils import response
+from src.utils.auth import has_role 
+from src.models.user import Role
 
 reports_router = APIRouter(prefix="", tags=["Reports"])
 
 
 @reports_router.get("/hr")
-def get_hr_report_endpoint(db: Session = Depends(get_sync_hm_db)):
+def get_hr_report_endpoint(
+    db: Session = Depends(get_sync_hm_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
+    )
+):
     return response(data=get_hr_report_logic(session=db))
 
 
@@ -27,6 +34,9 @@ def get_payroll_report(
         None, description="Tháng báo cáo (format: YYYY-MM-DD)"
     ),
     db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.PAYROLL_MANAGER.value])
+    )
 ):
     return response(data=get_payroll_report_logic(session=db, month=month))
 
@@ -35,5 +45,8 @@ def get_payroll_report(
 def get_dividend_report_endpoint(
     year: Optional[int] = Query(None, description="Năm báo cáo"),
     db: Session = Depends(get_sync_hm_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value])
+    )
 ):
     return response(data=get_dividend_report_logic(session=db, year=year))

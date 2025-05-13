@@ -17,6 +17,8 @@ from ..utils.payroll import (
     search_payroll_logic
 )
 from .._utils import response
+from src.utils.auth import has_role
+from src.models.user import Role
 
 
 payroll_router = APIRouter(prefix="", tags=["Payroll"])
@@ -26,7 +28,10 @@ payroll_router = APIRouter(prefix="", tags=["Payroll"])
 def read_payroll(
     page: int = Query(1, ge=1),
     per_page: int = Query(10, ge=1, le=100),
-    pr_db: Session = Depends(get_sync_pr_db)
+    pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.PAYROLL_MANAGER.value])
+    )
 ):
     return response(
         data=get_payroll(
@@ -42,7 +47,10 @@ def search_payroll(
     page: int = Query(1, ge=1),
     per_page: int = Query(10, ge=1, le=100),
     search_query: str = Query(None),
-    pr_db: Session = Depends(get_sync_pr_db)
+    pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.PAYROLL_MANAGER.value])
+    )
 ):
     return response(
         data=search_payroll_logic(
@@ -58,7 +66,10 @@ def search_payroll(
 def update_payroll_router(
     payroll_id: int,
     update_data: PayrollUpdate,
-    pr_db: Session = Depends(get_sync_pr_db)
+    pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.PAYROLL_MANAGER.value])
+    )
 ):
     return update_payroll(
         session=pr_db, 
@@ -71,7 +82,10 @@ def read_attendance(
     per_page: int = Query(10, ge=1, le=100),
     search_date: date = Query(None),
     employee_id: int = Query(None),
-    pr_db: Session = Depends(get_sync_pr_db)
+    pr_db: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(required_roles=[Role.ADMIN.value, Role.PAYROLL_MANAGER.value])
+    )
 ):
     return response(
         data=get_attendance_records(
