@@ -124,6 +124,12 @@ Hệ thống có 4 vai trò người dùng:
 | `/refresh` | POST | Làm mới token | Đã đăng nhập |
 | `/me` | GET | Xem thông tin người dùng hiện tại | Đã đăng nhập |
 
+### Quản lý hồ sơ cá nhân (`/profile`)
+
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/profile` | GET | Xem thông tin cá nhân | Đã đăng nhập |
+
 ### Quản lý nhân viên (`/employees`)
 
 | Endpoint | Phương thức | Mô tả | Quyền truy cập |
@@ -162,12 +168,6 @@ Hệ thống có 4 vai trò người dùng:
 | `/payroll/search` | GET | Tìm kiếm bảng lương | Admin, Payroll Manager |
 | `/payroll/update/{payroll_id}` | PUT | Cập nhật thông tin lương | Admin, Payroll Manager |
 | `/payroll/attendance` | GET | Danh sách chấm công (phân trang) | Admin, Payroll Manager |
-
-### Quản lý hồ sơ cá nhân (`/profile`)
-
-| Endpoint | Phương thức | Mô tả | Quyền truy cập |
-|----------|-------------|-------|----------------|
-| `/profile` | GET | Xem thông tin cá nhân | Đã đăng nhập |
 
 ### Báo cáo thống kê (`/reports`)
 
