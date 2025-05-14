@@ -215,9 +215,23 @@ def delete_employee_logic(session_human : Session, session_payroll: Session, emp
     
 
 def view_employee_details_logic(session: Session, employee_id: int):
-    employee = session.query(HmEmployee).filter_by(EmployeeID=employee_id).first()
-    if not employee:
-        raise HTTPException(status_code=404, detail="Nhân viên không tồn tại")
+    employee = session.query(HmEmployee).options(
+        joinedload(HmEmployee.department),
+        joinedload(HmEmployee.position)
+    ).filter(HmEmployee.EmployeeID == employee_id).first()
     
-    return employee
+    return {
+        "EmployeeID": employee.EmployeeID,
+        "FullName": employee.FullName,
+        "DateOfBirth": employee.DateOfBirth,
+        "Gender": employee.Gender,
+        "PhoneNumber": employee.PhoneNumber,
+        "Email": employee.Email,
+        "HireDate": employee.HireDate,
+        "DepartmentID": employee.DepartmentID,
+        "DepartmentName": employee.department.DepartmentName if employee.department else None,
+        "PositionID": employee.PositionID,
+        "PositionName": employee.position.PositionName if employee.position else None,
+        "Status": employee.Status
+    }
 

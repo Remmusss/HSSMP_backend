@@ -138,3 +138,27 @@ def get_attendance_records(
     results = query.order_by(PrAttendance.AttendanceMonth.desc()).offset(offset).limit(per_page).all()
 
     return results
+
+def get_personal_attendance(
+        session: Session,
+        employee_id: int
+        )-> List[PrAttendance]:
+
+    query = session.query(PrAttendance).filter(PrAttendance.EmployeeID == employee_id)
+
+    if not query:
+        raise HTTPException(status_code=404, detail=f"Không tìm thấy dữ liệu về điểm danh của nhân viên {employee_id}")
+
+    return query.all()
+
+
+def get_personal_payroll(
+        session: Session,
+        employee_id: int
+        )-> List[PrSalary]:
+    query = session.query(PrSalary).filter(PrSalary.EmployeeID == employee_id)
+
+    if not query:
+        raise HTTPException(status_code=404, detail=f"Không tìm thấy dữ liệu về bảng lương của nhân viên {employee_id}")
+
+    return query.all()
