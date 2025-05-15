@@ -153,7 +153,7 @@ def salary_gap_warning(session: Session, allowed_gap_percentage: int = 30):
             gap_percentage = (current_salary - previous_salary) / previous_salary * 100
             
 
-            if gap_percentage >= allowed_gap_percentage:
+            if abs(gap_percentage) >= allowed_gap_percentage:
                 warnings.append(
                     {
                         "EmployeeID": employee.EmployeeID,
@@ -204,7 +204,7 @@ def salary_gap_warning_personal(
 
     gap_percentage = (current_salary - previous_salary) / previous_salary * 100
 
-    if gap_percentage >= allowed_gap_percentage:
+    if abs(gap_percentage) >= allowed_gap_percentage:
         employee = db_payroll.query(PrEmployee).filter(PrEmployee.EmployeeID == user.Employee_id).first()
         employee_name = employee.FullName if employee else user.FullName
         
@@ -223,3 +223,4 @@ def salary_gap_warning_personal(
     return {
         "salary_gap_warning": warnings if warnings else "Không có thông báo",
     }
+

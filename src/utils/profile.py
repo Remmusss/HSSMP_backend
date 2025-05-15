@@ -31,7 +31,7 @@ def read_profile_logic(db_user: Session, db_human: Session, db_payroll: Session,
     user = get_current_user(db_user, token)
 
     credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
+        status_code=401,
         detail="Không thể xác thực tài khoản",
         headers={"WWW-Authenticate": "Bearer"},
     )    

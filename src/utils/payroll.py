@@ -105,6 +105,7 @@ def update_payroll(session: Session, payroll_id: int, update_data : PayrollUpdat
     try:
         for field, value in update_data.model_dump(exclude_unset=True).items():
             setattr(payroll_emp, field, value)
+        payroll_emp.NetSalary = payroll_emp.BaseSalary + payroll_emp.Bonus - payroll_emp.Deductions
         session.commit()
     except Exception as e:
         session.rollback()

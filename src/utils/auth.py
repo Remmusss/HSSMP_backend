@@ -42,7 +42,7 @@ def get_current_user(
     token: str = Depends(oauth2_scheme)
 ):
     credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
+        status_code=401,
         detail="Không thể xác thực tài khoản",
         headers={"WWW-Authenticate": "Bearer"},
     )
@@ -64,7 +64,7 @@ def get_current_user(
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.now(UTC) + timedelta(minutes=15)
+    expire = datetime.now(UTC) + timedelta(minutes=60)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -83,9 +83,8 @@ def has_role(required_roles: list[str]):
     def check_role(user: User = Depends(get_current_user)):
         if user.Role not in required_roles:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
+                status_code=403,
                 detail="Không có quyền truy cập"
             )
         return user
-
     return check_role

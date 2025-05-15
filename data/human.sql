@@ -29,9 +29,9 @@ INSERT INTO Positions (PositionName) VALUES
 
 -- Chèn lại Employees
 INSERT INTO Employees (FullName, DateOfBirth, Gender, PhoneNumber, Email, HireDate, DepartmentID, PositionID, Status) VALUES
-(N'Nguyễn Văn An', '1990-05-15', N'Nam', '0905123456', 'an.nguyen@email.com', '2020-01-10', 1, 1, N'Active'),
-(N'Trần Thị Bình', '1992-08-22', N'Nữ', '0916234567', 'binh.tran@email.com', '2019-03-15', 2, 3, N'Active'),
-(N'Lê Minh Châu', '1988-11-30', N'Nam', '0927345678', 'chau.le@email.com', '2021-06-20', 3, 2, N'Inactive'),
+(N'Nguyễn Văn An', '2020-05-20', N'Nam', '0905123456', 'an.nguyen@email.com', '2020-01-10', 1, 1, N'Active'),
+(N'Trần Thị Bình', '2015-05-30', N'Nữ', '0916234567', 'binh.tran@email.com', '2019-03-15', 2, 3, N'Active'),
+(N'Lê Minh Châu', '2024-06-10', N'Nam', '0927345678', 'chau.le@email.com', '2021-06-20', 3, 2, N'Inactive'),
 (N'Phạm Thị Duyên', '1995-02-14', N'Nữ', '0938456789', 'duyen.pham@email.com', '2022-09-01', 4, 1, N'Active'),
 (N'Hoàng Văn Em', '1993-07-07', N'Nam', '0949567890', 'ex.hoang@email.com', '2018-12-05', 5, 4, N'Inactive'),
 (N'Vũ Thị Ngô', '1991-04-25', N'Nữ', '0950678901', 'fleur.vu@email.com', '2020-11-11', 1, 3, N'Active'),
