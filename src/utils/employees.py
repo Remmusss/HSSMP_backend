@@ -215,13 +215,22 @@ def delete_employee_logic(session_human : Session, session_payroll: Session, emp
     
 
 def view_employee_details_logic(session: Session, employee_id: int):
+    # if not employee_id:
+    #     raise HTTPException(status_code=400, detail="EmployeeID trống")
+
     employee = session.query(HmEmployee).options(
         joinedload(HmEmployee.department),
         joinedload(HmEmployee.position)
     ).filter(HmEmployee.EmployeeID == employee_id).first()
     
+    # if not employee:
+    #     raise HTTPException(status_code=404, detail="EmployeeID không tồn tại")
+
+    if not employee:
+        return None
+
     return {
-        "EmployeeID": employee.EmployeeID,
+        "EmployeeID": employee.EmployeeID ,
         "FullName": employee.FullName,
         "DateOfBirth": employee.DateOfBirth,
         "Gender": employee.Gender,
@@ -234,4 +243,3 @@ def view_employee_details_logic(session: Session, employee_id: int):
         "PositionName": employee.position.PositionName if employee.position else None,
         "Status": employee.Status
     }
-

@@ -41,10 +41,8 @@ def read_profile_logic(db_user: Session, db_human: Session, db_payroll: Session,
 
     try:
         employee = view_employee_details_logic(session=db_human, employee_id=user.Employee_id)
-    
-        if employee:
-            payroll = get_personal_payroll(session=db_payroll, employee_id=user.Employee_id)
-            attendance = get_personal_attendance(session=db_payroll, employee_id=user.Employee_id)
+        payroll = get_personal_payroll(session=db_payroll, employee_id=user.Employee_id)
+        attendance = get_personal_attendance(session=db_payroll, employee_id=user.Employee_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi khi tìm kiếm nhân viên: {str(e)}")
 
@@ -53,9 +51,9 @@ def read_profile_logic(db_user: Session, db_human: Session, db_payroll: Session,
         "username": user.Username,
         "employee_id": user.Employee_id,
         "role": user.Role,
-        "employee_details": employee if employee else "Không tìm thấy dữ liệu về employee",
-        "payroll_details": payroll if payroll else "Không tìm thấy dữ liệu về payroll",
-        "attendance_details": attendance if attendance else "Không tìm thấy dữ liệu về attendance"
+        "employee_details": employee if employee else None,
+        "payroll_details": payroll if payroll else None,
+        "attendance_details": attendance if attendance else None
     }
 
 

@@ -146,9 +146,6 @@ def get_personal_attendance(
 
     query = session.query(PrAttendance).filter(PrAttendance.EmployeeID == employee_id)
 
-    if not query:
-        raise HTTPException(status_code=404, detail=f"Không tìm thấy dữ liệu về điểm danh của nhân viên {employee_id}")
-
     return query.all()
 
 
@@ -156,9 +153,7 @@ def get_personal_payroll(
         session: Session,
         employee_id: int
         )-> List[PrSalary]:
+    
     query = session.query(PrSalary).filter(PrSalary.EmployeeID == employee_id)
-
-    if not query:
-        raise HTTPException(status_code=404, detail=f"Không tìm thấy dữ liệu về bảng lương của nhân viên {employee_id}")
 
     return query.all()
