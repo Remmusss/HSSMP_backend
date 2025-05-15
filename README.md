@@ -129,6 +129,7 @@ Hệ thống có 4 vai trò người dùng:
 | Endpoint | Phương thức | Mô tả | Quyền truy cập |
 |----------|-------------|-------|----------------|
 | `/profile` | GET | Xem thông tin cá nhân | Đã đăng nhập |
+| `/profile/change_password` | PUT | Đổi mật khẩu | Đã đăng nhập |
 
 ### Quản lý nhân viên (`/employees`)
 
@@ -175,7 +176,7 @@ Hệ thống có 4 vai trò người dùng:
 |----------|-------------|-------|----------------|
 | `/reports/hr` | GET | Báo cáo nhân sự | Admin, HR Manager |
 | `/reports/payroll` | GET | Báo cáo lương | Admin, Payroll Manager |
-| `/reports/dividend` | GET | Báo cáo cổ tức | Admin |
+| `/reports/dividend` | GET | Báo cáo cổ tức | Admin, Payroll Manager |
 
 ### Thông báo (`/notifications`)
 
