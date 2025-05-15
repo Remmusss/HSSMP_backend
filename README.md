@@ -124,6 +124,12 @@ Hệ thống có 4 vai trò người dùng:
 | `/refresh` | POST | Làm mới token | Đã đăng nhập |
 | `/me` | GET | Xem thông tin người dùng hiện tại | Đã đăng nhập |
 
+### Quản lý hồ sơ cá nhân (`/profile`)
+
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/profile` | GET | Xem thông tin cá nhân | Đã đăng nhập |
+
 ### Quản lý nhân viên (`/employees`)
 
 | Endpoint | Phương thức | Mô tả | Quyền truy cập |
@@ -135,25 +141,6 @@ Hệ thống có 4 vai trò người dùng:
 | `/employees/update/{employee_id}` | PUT | Cập nhật thông tin nhân viên | Admin, HR Manager |
 | `/employees/delete/{employee_id}` | DELETE | Xóa nhân viên | Admin, HR Manager |
 
-### Quản lý phòng ban (`/departments`)
-
-| Endpoint | Phương thức | Mô tả | Quyền truy cập |
-|----------|-------------|-------|----------------|
-| `/departments` | GET | Danh sách phòng ban | Admin |
-| `/departments/add` | POST | Thêm phòng ban mới (đồng bộ) | Admin |
-| `/departments/update/{department_id}` | PUT | Cập nhật thông tin phòng ban | Admin |
-| `/departments/delete/{department_id}` | DELETE | Xóa phòng ban | Admin |
-
-### Quản lý chức vụ (`/positions`)
-
-| Endpoint | Phương thức | Mô tả | Quyền truy cập |
-|----------|-------------|-------|----------------|
-| `/positions` | GET | Danh sách chức vụ | Admin |
-| `/positions/distribution/{position_id}` | GET | Phân bố nhân viên theo phòng ban | Admin |
-| `/positions/add` | POST | Thêm chức vụ mới (đồng bộ) | Admin |
-| `/positions/update/{position_id}` | PUT | Cập nhật thông tin chức vụ | Admin |
-| `/positions/delete/{position_id}` | DELETE | Xóa chức vụ | Admin |
-
 ### Quản lý lương (`/payroll`)
 
 | Endpoint | Phương thức | Mô tả | Quyền truy cập |
@@ -163,11 +150,24 @@ Hệ thống có 4 vai trò người dùng:
 | `/payroll/update/{payroll_id}` | PUT | Cập nhật thông tin lương | Admin, Payroll Manager |
 | `/payroll/attendance` | GET | Danh sách chấm công (phân trang) | Admin, Payroll Manager |
 
-### Quản lý hồ sơ cá nhân (`/profile`)
+### Quản lý phòng ban (`/departments`)
 
 | Endpoint | Phương thức | Mô tả | Quyền truy cập |
 |----------|-------------|-------|----------------|
-| `/profile` | GET | Xem thông tin cá nhân | Đã đăng nhập |
+| `/departments` | GET | Danh sách phòng ban | Admin, HR Manager, Payroll Manager |
+| `/departments/add` | POST | Thêm phòng ban mới (đồng bộ) | Admin, HR Manager |
+| `/departments/update/{department_id}` | PUT | Cập nhật thông tin phòng ban | Admin, HR Manager |
+| `/departments/delete/{department_id}` | DELETE | Xóa phòng ban | Admin, HR Manager |
+
+### Quản lý chức vụ (`/positions`)
+
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/positions` | GET | Danh sách chức vụ | Admin, HR Manager, Payroll Manager |
+| `/positions/distribution/{position_id}` | GET | Phân bố nhân viên theo phòng ban | Admin, HR Manager, Payroll Manager |
+| `/positions/add` | POST | Thêm chức vụ mới (đồng bộ) | Admin, HR Manager |
+| `/positions/update/{position_id}` | PUT | Cập nhật thông tin chức vụ | Admin, HR Manager |
+| `/positions/delete/{position_id}` | DELETE | Xóa chức vụ | Admin, HR Manager |
 
 ### Báo cáo thống kê (`/reports`)
 
@@ -177,9 +177,19 @@ Hệ thống có 4 vai trò người dùng:
 | `/reports/payroll` | GET | Báo cáo lương | Admin, Payroll Manager |
 | `/reports/dividend` | GET | Báo cáo cổ tức | Admin |
 
-### Lưu ý về phân quyền
+### Thông báo (`/notifications`)
 
-- **Admin**: Có quyền truy cập toàn bộ API
-- **HR Manager**: Quản lý nhân viên và xem báo cáo nhân sự
-- **Payroll Manager**: Quản lý lương, chấm công và xem báo cáo lương
-- **Employee**: Chỉ có quyền xem thông tin cá nhân
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/anniversaries` | GET | Lấy thông báo về ngày kỷ niệm của nhân viên sắp tới trong 30 ngày | Đã đăng nhập |
+| `/absent-days-warning` | GET | Lấy thông báo về số ngày nghỉ phép của TẤT CẢ nhân viên trong 3 tháng gần đây | Admin, HR Manager, Payroll Manager |
+| `/absent-days-personal-warning` | GET | Lấy thông báo về số ngày nghỉ phép của nhân viên trong 3 tháng gần đây | Đã đăng nhập |
+| `/salary-gap-warning` | GET | Lấy thông báo về sự chênh lệch lương giữa 2 tháng gần đây của TẤT CẢ nhân viên | Admin, HR Manager, Payroll Manager |
+| `/salary-gap-warning-personal` | GET | Lấy thông báo về sự chênh lệch lương giữa 2 tháng gần đây của bản thân | Đã đăng nhập |
+
+### Quản lý tài khoản (`/admin`)
+
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/admin/create_user` | POST | Tạo tài khoản cho nhân viên | Admin |
+| `/admin/update_user/{username}` | PUT | Cập nhật tài khoản cho nhân viên | Admin |

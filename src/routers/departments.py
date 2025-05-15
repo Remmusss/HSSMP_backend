@@ -5,8 +5,7 @@ from src.databases.payroll_db import get_sync_db as get_sync_pr_db
 from sqlalchemy.orm import Session
 from src._utils import response
 from src.models.human import DepartmentCreate, DepartmentUpdate
-from src.models.user import UserResponse
-from src.utils.auth import has_role, get_current_user
+from src.utils.auth import has_role
 from src.models.user import Role
 
 from src.utils.departments import (
