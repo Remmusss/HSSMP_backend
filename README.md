@@ -150,11 +150,24 @@ Hệ thống có 4 vai trò người dùng:
 | `/payroll/update/{payroll_id}` | PUT | Cập nhật thông tin lương | Admin, Payroll Manager |
 | `/payroll/attendance` | GET | Danh sách chấm công (phân trang) | Admin, Payroll Manager |
 
-### Quản lý hồ sơ cá nhân (`/profile`)
+### Quản lý phòng ban (`/departments`)
 
 | Endpoint | Phương thức | Mô tả | Quyền truy cập |
 |----------|-------------|-------|----------------|
-| `/profile` | GET | Xem thông tin cá nhân | Đã đăng nhập |
+| `/departments` | GET | Danh sách phòng ban | Admin, HR Manager, Payroll Manager |
+| `/departments/add` | POST | Thêm phòng ban mới (đồng bộ) | Admin, HR Manager |
+| `/departments/update/{department_id}` | PUT | Cập nhật thông tin phòng ban | Admin, HR Manager |
+| `/departments/delete/{department_id}` | DELETE | Xóa phòng ban | Admin, HR Manager |
+
+### Quản lý chức vụ (`/positions`)
+
+| Endpoint | Phương thức | Mô tả | Quyền truy cập |
+|----------|-------------|-------|----------------|
+| `/positions` | GET | Danh sách chức vụ | Admin, HR Manager, Payroll Manager |
+| `/positions/distribution/{position_id}` | GET | Phân bố nhân viên theo phòng ban | Admin, HR Manager, Payroll Manager |
+| `/positions/add` | POST | Thêm chức vụ mới (đồng bộ) | Admin, HR Manager |
+| `/positions/update/{position_id}` | PUT | Cập nhật thông tin chức vụ | Admin, HR Manager |
+| `/positions/delete/{position_id}` | DELETE | Xóa chức vụ | Admin, HR Manager |
 
 ### Báo cáo thống kê (`/reports`)
 
