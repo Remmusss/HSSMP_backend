@@ -22,7 +22,7 @@ def login(
     user = authenticate_user(db, username, password)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=401,
             detail="Tên đăng nhập hoặc mật khẩu không hợp lệ"
         )
 
@@ -37,7 +37,7 @@ def refresh(
     db: Session = Depends(get_sync_user_db), token: str = Depends(oauth2_scheme)
 ):
     credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
+        status_code=401,
         detail="Không thể xác thực tài khoản",
         headers={"WWW-Authenticate": "Bearer"}
     )
@@ -56,7 +56,7 @@ def me(db: Session = Depends(get_sync_user_db), token: str = Depends(oauth2_sche
     user = get_current_user(db, token)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=401,
             detail="Không thể xác thực tài khoản"
         )
     return UserResponse(
