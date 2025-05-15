@@ -54,7 +54,10 @@ def upcoming_anniversaries(session: Session, window_days: int = 30):
                 )
                 break
 
-    return {"count": len(upcoming), "upcoming_anniversaries": upcoming}
+    return {
+        "count": len(upcoming),
+        "upcoming_anniversaries": upcoming if upcoming else "Không có thông báo",
+    }
 
 
 def absent_days_warning(session: Session, windows_month: int = 3):
@@ -80,10 +83,13 @@ def absent_days_warning(session: Session, windows_month: int = 3):
                 }
             )
 
-    return {"count": len(warnings), "absent_days_warning": warnings}
+    return {
+        "count": len(warnings),
+        "absent_days_warning": warnings if warnings else "Không có thông báo",
+    }
 
 
-def absent_days_personal_warning(
+def absent_days_warning_personal(
     db_user: Session, db_payroll: Session, token: str, windows_month: int = 3
 ):
     user = get_current_user(db_user, token)
@@ -151,7 +157,6 @@ def salary_gap_warning(session: Session, allowed_gap_percentage: int = 30):
 
         if previous_salary or previous_salary > 0:
             gap_percentage = (current_salary - previous_salary) / previous_salary * 100
-            
 
             if abs(gap_percentage) >= allowed_gap_percentage:
                 warnings.append(
@@ -205,9 +210,13 @@ def salary_gap_warning_personal(
     gap_percentage = (current_salary - previous_salary) / previous_salary * 100
 
     if abs(gap_percentage) >= allowed_gap_percentage:
-        employee = db_payroll.query(PrEmployee).filter(PrEmployee.EmployeeID == user.Employee_id).first()
+        employee = (
+            db_payroll.query(PrEmployee)
+            .filter(PrEmployee.EmployeeID == user.Employee_id)
+            .first()
+        )
         employee_name = employee.FullName if employee else user.FullName
-        
+
         warnings.append(
             {
                 "EmployeeID": user.Employee_id,
@@ -216,11 +225,10 @@ def salary_gap_warning_personal(
                 "PreviousSalary": previous_salary,
                 "GapPercentage": round(gap_percentage, 2),
                 "CurrentMonth": salaries[0].SalaryMonth.strftime("%Y-%m-%d"),
-                "PreviousMonth": salaries[1].SalaryMonth.strftime("%Y-%m-%d")
+                "PreviousMonth": salaries[1].SalaryMonth.strftime("%Y-%m-%d"),
             }
         )
 
     return {
         "salary_gap_warning": warnings if warnings else "Không có thông báo",
     }
-

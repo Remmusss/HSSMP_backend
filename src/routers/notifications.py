@@ -10,7 +10,7 @@ from typing import Optional
 from src.utils.notifications import (
     upcoming_anniversaries,
     absent_days_warning,
-    absent_days_personal_warning,
+    absent_days_warning_personal,
     salary_gap_warning,
     salary_gap_warning_personal,
 )
@@ -53,13 +53,13 @@ def get_absent_days_warning(
     "/absent-days-personal-warning",
     description="Lấy thông báo về số ngày nghỉ phép của nhân viên trong 3 tháng gần đây",
 )
-def get_absent_days_personal_warning(
+def get_absent_days_warning_personal(
     db_user: Session = Depends(get_sync_user_db),
     db_payroll: Session = Depends(get_sync_pr_db),
     token: str = Depends(oauth2_scheme),
 ):
     return response(
-        data=absent_days_personal_warning(
+        data=absent_days_warning_personal(
             db_user=db_user, db_payroll=db_payroll, token=token
         )
     )
