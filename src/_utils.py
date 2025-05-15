@@ -18,6 +18,10 @@ def response(code=200, status="success", message="", data="", metadata={}):
         status_code=code,
     )
 
+def hash_password(password: str):
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    return pwd_context.hash(password)
+
 # SECRET_KEY = "sao-cung-duoc"
 # ALGORITHM = "HS256"
 # ACCESS_TOKEN_EXPIRE_MINUTES = 60
