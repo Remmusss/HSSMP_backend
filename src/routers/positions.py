@@ -22,7 +22,7 @@ positions_router = APIRouter(prefix="", tags=["Positions"])
 def get_positions(
     db: Session = Depends(get_sync_hm_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value, Role.PAYROLL_MANAGER.value])
     )
 ):
     return response(data=read_positions(session=db))
@@ -33,7 +33,7 @@ def get_numbers_of_position_by_department(
     position_id: int, 
     db: Session = Depends(get_sync_hm_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value, Role.PAYROLL_MANAGER.value])
     )
 ):
     return response(data=get_position_distribution(session=db, position_id=position_id))
@@ -45,7 +45,7 @@ def add_position(
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
     )
 ):
     return response(
@@ -64,7 +64,7 @@ def update_position(
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
     )
 ):
     return response(
@@ -83,7 +83,7 @@ def delete_position(
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
     )
 ):
     return response(

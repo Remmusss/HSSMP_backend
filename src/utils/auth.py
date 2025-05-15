@@ -12,6 +12,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 SECRET_KEY = "gi-cung-duoc"
 ALGORITHM = "HS256"
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 def authenticate_user(db: Session, username: str, password: str):
     user = db.query(User).filter(User.Username == username).first()
@@ -23,7 +25,6 @@ def authenticate_user(db: Session, username: str, password: str):
 
 
 def verify_password(plain_password: str, hashed_password: str):
-    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     return pwd_context.verify(plain_password, hashed_password)
 
 

@@ -24,7 +24,7 @@ departments_router = APIRouter(prefix="", tags=["Departments"])
 def get_departments(
     db: Session = Depends(get_sync_hm_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value, Role.PAYROLL_MANAGER.value])
     )
 ):
     return response(data=read_departments(session=db))
@@ -36,7 +36,7 @@ def add_department(
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
     )
 ):
     return response(
@@ -55,7 +55,7 @@ def update_department(
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
     )
 ):
     return response(
@@ -74,7 +74,7 @@ def delete_department(
     hm_db: Session = Depends(get_sync_hm_db),
     pr_db: Session = Depends(get_sync_pr_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
     )
 ):
     return response(
