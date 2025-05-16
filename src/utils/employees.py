@@ -46,12 +46,9 @@ def search_employees_logic(
     page: int = 1,
     per_page: int = 10
 ):
-    query = session.query(HmEmployee).join(
-        HmDepartment, HmEmployee.DepartmentID == HmDepartment.DepartmentID, isouter=True
-    )
-    
-    query = query.join(
-        HmPosition, HmEmployee.PositionID == HmPosition.PositionID, isouter=True
+    query = session.query(HmEmployee).options(
+        joinedload(HmEmployee.department),
+        joinedload(HmEmployee.position)
     )
 
     if search_query:
@@ -60,14 +57,14 @@ def search_employees_logic(
             query = query.filter(
                 (HmEmployee.EmployeeID == numeric_query) |
                 (HmEmployee.FullName.ilike(f"%{search_query}%")) |
-                (HmDepartment.DepartmentName.ilike(f"%{search_query}%")) |
-                (HmPosition.PositionName.ilike(f"%{search_query}%"))
+                (HmEmployee.department.DepartmentName.ilike(f"%{search_query}%")) |
+                (HmEmployee.position.PositionName.ilike(f"%{search_query}%"))
             )
         except ValueError:
             query = query.filter(
                 (HmEmployee.FullName.ilike(f"%{search_query}%")) |
-                (HmDepartment.DepartmentName.ilike(f"%{search_query}%")) |
-                (HmPosition.PositionName.ilike(f"%{search_query}%"))
+                (HmEmployee.department.DepartmentName.ilike(f"%{search_query}%")) |
+                (HmEmployee.position.PositionName.ilike(f"%{search_query}%"))
             )
 
     offset = (page - 1) * per_page
