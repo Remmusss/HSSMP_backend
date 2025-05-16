@@ -46,7 +46,7 @@ def get_dividend_report_endpoint(
     year: Optional[int] = Query(None, description="Năm báo cáo"),
     db: Session = Depends(get_sync_hm_db),
     has_role=Depends(
-        has_role(required_roles=[Role.ADMIN.value])
+        has_role(required_roles=[Role.ADMIN.value, Role.HR_MANAGER.value])
     )
 ):
     return response(data=get_dividend_report_logic(session=db, year=year))
