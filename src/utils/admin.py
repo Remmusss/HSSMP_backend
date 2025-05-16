@@ -9,23 +9,33 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta, UTC
 
 from src.models.user import UserCreate, UserUpdate
-
+from src.schemas.human import Employee as HmEmployee
 from src._utils import hash_password
 
 
-
-def create_user_account(session: Session, user: UserCreate):
-    db_user = User(
-        Username=user.Username,
-        Password=hash_password(user.Password),
-        Role=user.Role.value,
-        Employee_id=user.Employee_id,
+def create_user_account(
+    db_user: Session, db_human: Session, user_data: UserCreate
+):
+    user = User(
+        Username=user_data.Username,
+        Password=hash_password(user_data.Password),
+        Role=user_data.Role.value,
+        Employee_id=user_data.Employee_id,
     )
+
+    employee = (
+        db_human.query(HmEmployee)
+        .filter(HmEmployee.EmployeeID == user_data.Employee_id)
+        .first()
+    )
+    if not employee:
+        raise HTTPException(status_code=404, detail="Id nhân viên không tồn tại")
+
     try:
-        session.add(db_user)
-        session.commit()
+        db_user.add(db_user)
+        db_user.commit()
     except Exception as e:
-        session.rollback()
+        db_user.rollback()
         raise HTTPException(
             status_code=500, detail=f"Có lỗi khi tạo tài khoản: {str(e)}"
         )
@@ -36,24 +46,40 @@ def create_user_account(session: Session, user: UserCreate):
     }
 
 
-def update_user_account(session: Session, username: str, user: UserUpdate):
-    db_user = session.query(User).filter(User.Username == username).first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail="Không tìm thấy tài khoản cần cập nhật")
+def update_user_account(
+    db_user: Session, db_human: Session, username: str, user_data: UserUpdate
+):
+    user = db_user.query(User).filter(User.Username == username).first()
+    if not user:
+        raise HTTPException(
+            status_code=404, detail="Không tìm thấy tài khoản cần cập nhật"
+        )
 
     try:
-        if user.Password:
-            db_user.Password = hash_password(user.Password)
-        if user.Role:
-            db_user.Role = user.Role
-        if user.Employee_id:
-            db_user.Employee_id = user.Employee_id
-        session.commit()
+        if user_data.Password:
+            user.Password = hash_password(user_data.Password)
+        if user_data.Role:
+            user.Role = user_data.Role
+        if user_data.Employee_id:
+            employee = (
+                db_human.query(HmEmployee)
+                .filter(HmEmployee.EmployeeID == user_data.Employee_id)
+                .first()
+            )
+            if not employee:
+                raise HTTPException(
+                    status_code=404, detail="Id nhân viên không tồn tại"
+                )
+            user.Employee_id = user_data.Employee_id
+        db_user.commit()
     except Exception as e:
-        session.rollback()
-        raise HTTPException(status_code=500, detail=f"Có lỗi khi cập nhật tài khoản: {str(e)}")
+        db_user.rollback()
+        raise HTTPException(
+            status_code=500, detail=f"Có lỗi khi cập nhật tài khoản: {str(e)}"
+        )
+    
     return {
-        "username": db_user.Username,
-        "role": db_user.Role,
-        "employee_id": db_user.Employee_id,
+        "username": user.Username,
+        "role": user.Role,
+        "employee_id": user.Employee_id,
     }

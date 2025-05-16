@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form
 from src.databases.user_db import get_sync_db as get_sync_user_db
+from src.databases.human_db import get_sync_db as get_sync_human_db
 from sqlalchemy.orm import Session
 from src.utils.auth import (
     authenticate_user,
@@ -23,12 +24,14 @@ admin_router = APIRouter(prefix="", tags=["Admin"])
 )
 def create_user(
     user: UserCreate, 
-    session: Session = Depends(get_sync_user_db),
+    db_user: Session = Depends(get_sync_user_db),
+    db_human: Session = Depends(get_sync_human_db),
+
     has_role=Depends(has_role(required_roles=[Role.ADMIN.value]))
 ):
     return response(
         message="Tài khoản đã được tạo thành công",
-        data=create_user_account(session=session, user=user)
+        data=create_user_account(db_user=db_user, db_human=db_human, user_data=user)
     )
 
 
@@ -39,10 +42,11 @@ def create_user(
 def update_user(
     username: str, 
     user: UserUpdate, 
-    session: Session = Depends(get_sync_user_db),
+    db_user: Session = Depends(get_sync_user_db),
+    db_human: Session = Depends(get_sync_human_db),
     has_role=Depends(has_role(required_roles=[Role.ADMIN.value]))
 ):
     return response(
         message="Tài khoản đã được cập nhật thành công",
-        data=update_user_account(session=session, username=username, user=user)
+        data=update_user_account(db_user=db_user, db_human=db_human, username=username, user_data=user)
     )
