@@ -218,6 +218,7 @@ def update_and_sync_employee(
 def delete_employee_logic(
     session_human: Session, session_payroll: Session, employee_id: int
 ):
+    # Kiểm tra nhân viên có tồn tại không
     human_emp = (
         session_human.query(HmEmployee).filter_by(EmployeeID=employee_id).first()
     )
@@ -230,42 +231,42 @@ def delete_employee_logic(
             status_code=404, detail="Nhân viên không tồn tại trong cả hai hệ thống."
         )
 
-    if human_emp:
-        dividend_exists = (
-            session_human.query(HmDividend).filter_by(EmployeeID=employee_id).first()
-        )
-        if dividend_exists:
-            raise HTTPException(
-                status_code=400,
-                detail="Không thể xóa. Nhân viên có dữ liệu cổ tức trong HUMAN_2025.",
-            )
-
-    if payroll_emp:
-        salary_exists = (
-            session_payroll.query(PrSalary).filter_by(EmployeeID=employee_id).first()
-        )
-        attendance_exists = (
-            session_payroll.query(PrAttendance)
-            .filter_by(EmployeeID=employee_id)
-            .first()
-        )
-
-        if salary_exists or attendance_exists:
-            raise HTTPException(
-                status_code=400,
-                detail="Không thể xóa. Nhân viên có dữ liệu lương hoặc chấm công trong payroll.",
-            )
-
     try:
         if human_emp:
+            dividends = (
+                session_human.query(HmDividend)
+                .filter(HmDividend.EmployeeID == employee_id)
+                .all()
+            )
+            for dividend in dividends:
+                session_human.delete(dividend)
+
             session_human.delete(human_emp)
             session_human.commit()
 
         if payroll_emp:
+            salaries = (
+                session_payroll.query(PrSalary)
+                .filter(PrSalary.EmployeeID == employee_id)
+                .all()
+            )
+            for salary in salaries:
+                session_payroll.delete(salary)
+
+            attendances = (
+                session_payroll.query(PrAttendance)
+                .filter(PrAttendance.EmployeeID == employee_id)
+                .all()
+            )
+            for attendance in attendances:
+                session_payroll.delete(attendance)
+
             session_payroll.delete(payroll_emp)
             session_payroll.commit()
 
-        return {"message": "Nhân viên đã được xóa thành công khỏi cả hai hệ thống."}
+        return {
+            "message": "Thông tin nhân viên đã được xóa thành công khỏi cả hai hệ thống."
+        }
 
     except Exception as e:
         session_human.rollback()
@@ -299,9 +300,9 @@ def view_employee_details_logic(session: Session, employee_id: int):
         "Email": employee.Email,
         "HireDate": employee.HireDate,
         "DepartmentID": employee.DepartmentID,
-        "DepartmentName": employee.department.DepartmentName
-        if employee.department
-        else None,
+        "DepartmentName": (
+            employee.department.DepartmentName if employee.department else None
+        ),
         "PositionID": employee.PositionID,
         "PositionName": employee.position.PositionName if employee.position else None,
         "Status": employee.Status,

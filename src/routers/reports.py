@@ -31,7 +31,7 @@ def get_hr_report_endpoint(
 @reports_router.get("/payroll")
 def get_payroll_report(
     month: Optional[date] = Query(
-        None, description="Tháng báo cáo (format: YYYY-MM-DD)"
+        None, description="Tháng báo cáo (format: YYYY-MM)"
     ),
     db: Session = Depends(get_sync_pr_db),
     has_role=Depends(

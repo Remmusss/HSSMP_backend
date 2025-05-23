@@ -34,8 +34,8 @@ def get_profile(
 
 @profile_router.put("/change_password")
 def change_password(
+    old_password: str,    
     new_password: str,
-    old_password: str,
     session: Session = Depends(get_sync_user_db),
     token: str = Depends(oauth2_scheme),
 ):
