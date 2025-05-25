@@ -27,6 +27,7 @@ def dashboard_data(
     session_human: Session = Depends(get_sync_hm_db),
     session_user: Session = Depends(get_sync_user_db),
     token: str = Depends(oauth2_scheme),
+    has_role = Depends(has_role(Role.ADMIN.value))
 ):
     data = admin_dashboard_data_logic(
         session_human=session_human,
@@ -43,6 +44,7 @@ def hr_dashboard_data(
     session_human: Session = Depends(get_sync_hm_db),
     session_user: Session = Depends(get_sync_user_db),
     token: str = Depends(oauth2_scheme),
+    has_role = Depends(has_role(Role.HR_MANAGER.value))
 ):
     data = hr_dashboard_data_logic(
         session_human=session_human,
@@ -55,11 +57,14 @@ def hr_dashboard_data(
 
 @dashboard_router.get("/payroll-manager")
 def payroll_dashboard_data(
+    session_human: Session = Depends(get_sync_hm_db),
     session_payroll: Session = Depends(get_sync_pr_db),
     session_user: Session = Depends(get_sync_user_db),
     token: str = Depends(oauth2_scheme),
+    has_role = Depends(has_role(Role.PAYROLL_MANAGER.value))
 ):
     data = payroll_dashboard_data_logic(
+        session_human=session_human,
         session_payroll=session_payroll,
         session_user=session_user,
         token=token
@@ -73,6 +78,7 @@ def employee_dashboard_data(
     session_payroll: Session = Depends(get_sync_pr_db),
     session_user: Session = Depends(get_sync_user_db),
     token: str = Depends(oauth2_scheme),
+    has_role = Depends(has_role(Role.EMPLOYEE.value))
 ):
     data = employee_dashboard_data_logic(
         session_human=session_human,
