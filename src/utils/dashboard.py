@@ -206,7 +206,7 @@ def hr_dashboard_data_logic(
 
 
 def payroll_dashboard_data_logic(
-    session_payroll: Session, session_user: Session, token: str
+    session_human: Session, session_payroll: Session, session_user: Session, token: str
 ):
     try:
         user = get_current_user(session_user, token)
@@ -218,6 +218,20 @@ def payroll_dashboard_data_logic(
 
         payroll_total = session_payroll.query(func.sum(PrSalary.NetSalary)).scalar()
 
+        number_of_notifications = (
+            int(upcoming_anniversaries(session_human)["count"])
+            + int(
+                salary_gap_warning_personal(session_user, session_payroll, token)[
+                    "count"
+                ]
+            )
+            + int(
+                absent_days_warning_personal(session_user, session_payroll, token)[
+                    "count"
+                ]
+            )
+            + int(salary_gap_warning(session_payroll)["count"])
+        )
         current_department = (
             session_payroll.query(PrDepartment)
             .filter(PrDepartment.DepartmentID == employee.DepartmentID)
@@ -254,6 +268,7 @@ def payroll_dashboard_data_logic(
             "current_position": (
                 current_position.PositionName if current_position else None
             ),
+            "number_of_notifications": number_of_notifications,
             "salary_distribution": salary_distribution,
         }
     except Exception as e:
@@ -278,6 +293,19 @@ def employee_dashboard_data_logic(
             .first()
         )
 
+        number_of_notifications = (
+            int(upcoming_anniversaries(session_human)["count"])
+            + int(
+                absent_days_warning_personal(session_user, session_payroll, token)[
+                    "count"
+                ]
+            )
+            + int(
+                salary_gap_warning_personal(session_user, session_payroll, token)[
+                    "count"
+                ]
+            )
+        )
         current_department = (
             session_payroll.query(PrDepartment)
             .filter(PrDepartment.DepartmentID == employee.DepartmentID)
@@ -338,6 +366,7 @@ def employee_dashboard_data_logic(
             "CurrentPosition": (
                 current_position.PositionName if current_position else None
             ),
+            "NumberOfNotifications": number_of_notifications,
             "SalaryDistribution": salary_distribution,
             "AttendanceOverview": attendance_overview,
         }
