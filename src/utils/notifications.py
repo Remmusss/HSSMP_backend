@@ -230,5 +230,6 @@ def salary_gap_warning_personal(
         )
 
     return {
+        "count": len(warnings),
         "salary_gap_warning": warnings if warnings else "Không có thông báo",
     }

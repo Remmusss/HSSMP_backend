@@ -21,6 +21,7 @@ from src.routers.positions import positions_router
 from src.routers.reports import reports_router
 from src.routers.notifications import notifications_router
 from src.routers.admin import admin_router
+from src.routers.dashboard import dashboard_router
 
 # uvicorn main:app --reload
 
@@ -43,6 +44,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router, prefix="")
+app.include_router(dashboard_router, prefix="/dashboard")
 app.include_router(profile_router, prefix="/profile")
 app.include_router(employees_router, prefix="/employees")
 app.include_router(payroll_router, prefix="/payroll")
