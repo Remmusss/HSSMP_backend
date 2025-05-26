@@ -335,14 +335,6 @@ def send_monthly_salary_notification(db_human: Session, db_payroll: Session, mon
             
         print(f"Chuẩn bị gửi thông báo lương tháng {month.month}/{month.year}")
         
-        query = (
-            db_payroll.query(PrSalary)
-            .filter(
-                extract("year", PrSalary.SalaryMonth) == month.year,
-                extract("month", PrSalary.SalaryMonth) == month.month
-            )
-        )
-        
         latest_salary_subq = (
             db_payroll.query(
                 PrSalary.EmployeeID,
