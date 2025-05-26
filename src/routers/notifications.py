@@ -13,6 +13,7 @@ from src.utils.notifications import (
     absent_days_warning_personal,
     salary_gap_warning,
     salary_gap_warning_personal,
+    send_monthly_salary_notification,
 )
 from src._utils import response
 from src.utils.auth import has_role
@@ -96,4 +97,18 @@ def get_salary_gap_warning_personal(
         data=salary_gap_warning_personal(
             db_user=db_user, db_payroll=db_payroll, token=token
         )
+    )
+
+@notifications_router.post(
+    "/email-salary-notification",
+    description="Gửi thông báo lương cho tất cả nhân viên",
+)
+def send_salary_email(
+    month_str: Optional[str] = Query(None, description="Tháng cần gửi thông báo lương (định dạng YYYY-MM hoặc YYYY-MM-DD)"),
+    db_human: Session = Depends(get_sync_hm_db),
+    db_payroll: Session = Depends(get_sync_pr_db),
+):
+    result = send_monthly_salary_notification(db_human, db_payroll, month_str)
+    return response(
+        data=result
     )

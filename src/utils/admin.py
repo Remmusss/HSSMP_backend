@@ -19,20 +19,31 @@ def create_user_account(
     user = User(
         Username=user_data.Username,
         Password=hash_password(user_data.Password),
-        Role=user_data.Role.value,
+        Role=user_data.Role.value if hasattr(user_data.Role, 'value') else user_data.Role,
         Employee_id=user_data.Employee_id,
     )
 
-    employee = (
+    user_exist = (
+        db_user.query(User)
+        .filter(User.Username == user_data.Username)
+        .first()
+    )
+
+    if user_exist:
+        raise HTTPException(status_code=404, detail="Username đã tồn tại")
+
+    employee_exist = (
         db_human.query(HmEmployee)
         .filter(HmEmployee.EmployeeID == user_data.Employee_id)
         .first()
     )
-    if not employee:
+
+    if not employee_exist:
         raise HTTPException(status_code=404, detail="Id nhân viên không tồn tại")
+    
 
     try:
-        db_user.add(db_user)
+        db_user.add(user)
         db_user.commit()
     except Exception as e:
         db_user.rollback()
@@ -41,7 +52,7 @@ def create_user_account(
         )
     return {
         "username": user.Username,
-        "role": user.Role.value,
+        "role": user.Role,
         "employee_id": user.Employee_id,
     }
 
@@ -59,7 +70,7 @@ def update_user_account(
         if user_data.Password:
             user.Password = hash_password(user_data.Password)
         if user_data.Role:
-            user.Role = user_data.Role
+            user.Role = user_data.Role.value if hasattr(user_data.Role, 'value') else user_data.Role
         if user_data.Employee_id:
             employee = (
                 db_human.query(HmEmployee)

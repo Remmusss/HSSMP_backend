@@ -20,7 +20,7 @@ admin_router = APIRouter(prefix="", tags=["Admin"])
 
 
 @admin_router.post(
-    "/admin/create_user", description="Tạo tài khoản cho nhân viên bằng tài khoản ADMIN"
+    "/create_user", description="Tạo tài khoản cho nhân viên bằng tài khoản ADMIN"
 )
 def create_user(
     user: UserCreate, 
@@ -36,7 +36,7 @@ def create_user(
 
 
 @admin_router.put(
-    "/admin/update_user/{username}",
+    "/update_user/{username}",
     description="Cập nhật tài khoản cho nhân viên bằng tài khoản ADMIN",
 )
 def update_user(
