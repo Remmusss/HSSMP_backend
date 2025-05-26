@@ -107,6 +107,14 @@ def send_salary_email(
     month_str: Optional[str] = Query(None, description="Tháng cần gửi thông báo lương (định dạng YYYY-MM hoặc YYYY-MM-DD)"),
     db_human: Session = Depends(get_sync_hm_db),
     db_payroll: Session = Depends(get_sync_pr_db),
+    has_role=Depends(
+        has_role(
+            required_roles=[
+                Role.ADMIN.value,
+                Role.PAYROLL_MANAGER.value,
+            ]
+        )
+    ),
 ):
     result = send_monthly_salary_notification(db_human, db_payroll, month_str)
     return response(
